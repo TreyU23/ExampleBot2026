@@ -13,11 +13,13 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.constants.DriverConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IntakeSubsystem;
 
 public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(DriverConstants.kDriver);
 
   public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
+  private final IntakeSubsystem m_intake = new IntakeSubsystem();
 
   private final SendableChooser<Command> m_autoChooser;
 

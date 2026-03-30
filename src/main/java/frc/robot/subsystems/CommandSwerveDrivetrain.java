@@ -222,15 +222,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public void seedMegaTag2() {
         if (getState().Speeds.omegaRadiansPerSecond <= Math.PI) {
-            LimelightHelpers.SetRobotOrientation(VisionConstants.limelight, 
+            LimelightHelpers.SetRobotOrientation(VisionConstants.kLimelight, 
                 getState().Pose.getRotation().getDegrees(),
                      0, 0, 0, 0, 0);
         }
     }
 
     public void updateWithVision() {
-        PoseEstimate megaTagOne = LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.limelight);
-        PoseEstimate megatagTwo = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.limelight);
+        PoseEstimate megaTagOne = LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.kLimelight);
+        PoseEstimate megatagTwo = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.kLimelight);
 
         if (LimelightHelpers.validPoseEstimate(megaTagOne)
                 && LimelightHelpers.validPoseEstimate(megatagTwo)
@@ -240,8 +240,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             double timestamp = megaTagOne.timestampSeconds;
             double tagCount = megaTagOne.tagCount;
 
-            SmartDashboard.putNumber("tagCount " + VisionConstants.limelight, tagCount);
-            SmartDashboard.putNumber("TA " + VisionConstants.limelight, tagArea);
+            SmartDashboard.putNumber("tagCount " + VisionConstants.kLimelight, tagCount);
+            SmartDashboard.putNumber("TA " + VisionConstants.kLimelight, tagArea);
 
             if (m_useMT2) seedVisionPose(megaTagOne, megatagTwo, tagArea, timestamp, tagCount);
             else addVisionMeasurement(megaTagOne.pose, timestamp);
@@ -251,34 +251,34 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private void seedVisionPose(PoseEstimate MT1Pose, PoseEstimate MT2Pose, 
                                     double tagArea, double timestamp, double tagCount) {
 
-        if (tagArea > VisionConstants.maxTA && tagCount >= 2) {
+        if (tagArea > VisionConstants.kMaxTA && tagCount >= 2) {
             addVisionMeasurement(
                 MT1Pose.pose, timestamp, 
                     VecBuilder.fill(
-                        VisionConstants.multiTagXY.get(tagArea),
-                            VisionConstants.multiTagXY.get(tagArea), 
-                                VisionConstants.multiTagRot.get(tagArea)));
+                        VisionConstants.kMultiTagXY.get(tagArea),
+                            VisionConstants.kMultiTagXY.get(tagArea), 
+                                VisionConstants.kMultiTagRot.get(tagArea)));
 
-        } else if (tagArea <= VisionConstants.maxTA && 
-                    tagCount >= 2 && tagArea >= VisionConstants.minTA) {
+        } else if (tagArea <= VisionConstants.kMaxTA && 
+                    tagCount >= 2 && tagArea >= VisionConstants.kMinTA) {
             addVisionMeasurement(MT2Pose.pose, timestamp, 
                 VecBuilder.fill(
-                    VisionConstants.megaTagTwo.get(tagArea),
-                        VisionConstants.megaTagTwo.get(tagArea), 
-                            VisionConstants.dontTrust));
+                    VisionConstants.kMegaTagTwo.get(tagArea),
+                        VisionConstants.kMegaTagTwo.get(tagArea), 
+                            VisionConstants.kDontTrust));
 
             addVisionMeasurement(MT1Pose.pose, timestamp,
                     VecBuilder.fill(
-                        VisionConstants.dontTrust, 
-                            VisionConstants.dontTrust, 
-                                VisionConstants.multiTagRot.get(tagArea)));
+                        VisionConstants.kDontTrust, 
+                            VisionConstants.kDontTrust, 
+                                VisionConstants.kMultiTagRot.get(tagArea)));
 
-        } else if (tagArea > VisionConstants.minTA && tagCount == 1) {
+        } else if (tagArea > VisionConstants.kMinTA && tagCount == 1) {
             addVisionMeasurement(MT2Pose.pose, timestamp, 
                 VecBuilder.fill(
-                    VisionConstants.megaTagTwo.get(tagArea),
-                        VisionConstants.megaTagTwo.get(tagArea), 
-                            VisionConstants.dontTrust));
+                    VisionConstants.kMegaTagTwo.get(tagArea),
+                        VisionConstants.kMegaTagTwo.get(tagArea), 
+                            VisionConstants.kDontTrust));
         }
     }
 
