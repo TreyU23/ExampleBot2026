@@ -66,12 +66,27 @@ public class IntakeSubsystem extends SubsystemBase {
         m_arm.setControl(m_pvReq.withPosition(rot));
     }
 
+    public void stopRoller() {
+        m_roller.stopMotor();
+    }
+
+    public void stopArm() {
+        m_arm.stopMotor();
+    }
+
     public Command setVoltageCmd(double volts) {
         return runOnce(()-> setVoltage(volts));
     }
 
     public Command setPositionCmd(double pose) {
         return runOnce(()-> setPosition(pose));
+    }
+
+    public Command stopCmd() {
+        return runOnce(()-> {
+            stopRoller();
+            stopArm();
+        });
     }
 
     private void configureRoller() {
