@@ -21,4 +21,10 @@ public class CurrentLimitConstants {
 
     public static final double kKickerStatorLimit = 60.0;
     public static final double kKickerSupplyLimit = 30.0;
+
+    public static final double kIndexerStatorLimit = 60.0;
+    public static final double kIndexerSupplyLimit = 30.0;
+
+    public static final double kTurretStatorLimit = 60.0;
+    public static final double kTurretSupplyLimit = 30.0;
 }
