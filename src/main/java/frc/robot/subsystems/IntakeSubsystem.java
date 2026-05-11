@@ -89,10 +89,20 @@ public class IntakeSubsystem extends SubsystemBase {
         });
     }
 
+    public Command runIntakeCmd() {
+        return runEnd(()-> {
+            setVoltage(IntakeConstants.kRollerMaxVoltage);
+            setPosition(IntakeConstants.kArmIntakePosition);
+        }, ()-> {
+            stopRoller();
+            stopArm();
+        });
+    }
+
     private void configureRoller() {
         m_rollerConfig.apply(new CurrentLimitsConfigs()
-            .withStatorCurrentLimit(CurrentLimitConstants.kIntakeArmStatorLimit)
-            .withSupplyCurrentLimit(CurrentLimitConstants.kIntakeArmSupplyLimit)
+            .withStatorCurrentLimit(CurrentLimitConstants.kIntakeRollerStatorLimit)
+            .withSupplyCurrentLimit(CurrentLimitConstants.kIntakeRollerSupplyLimit)
                 .withStatorCurrentLimitEnable(true)
                 .withSupplyCurrentLimitEnable(true));
 

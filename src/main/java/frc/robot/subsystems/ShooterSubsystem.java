@@ -1,13 +1,19 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-
+import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CurrentLimitConstants;
+import frc.robot.constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase { 
     private final TalonFX m_shooter;
@@ -22,14 +28,22 @@ public class ShooterSubsystem extends SubsystemBase {
     private double m_setPosition = 0.0;
     private double m_setVelocity = 0.0;
 
+    private static InvertedValue m_invertedValue;
+
     private boolean m_isLeft;
+    private String m_side;
 
     public ShooterSubsystem(boolean isLeft) {
         m_isLeft = isLeft;
-        m_shooter = new TalonFX(isLeft ? 9 : 10);
-        m_hood = new TalonFX(isLeft ? 11 : 12);
+        m_side = isLeft ? "Left" : "Right";
+
+        m_shooter = new TalonFX(isLeft ? ShooterConstants.kLeftShooterID : ShooterConstants.kRightShooterID);
+        m_hood = new TalonFX(isLeft ? ShooterConstants.kLeftHoodID : ShooterConstants.kRightHoodID);
+
         m_shooterConfig = m_shooter.getConfigurator();
         m_hoodConfig = m_hood.getConfigurator();
+
+        m_invertedValue = isLeft ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
 
         shooterConfigs();
         hoodConfigs();
@@ -41,6 +55,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public double getVelocity() {
         return m_shooter.getVelocity().getValueAsDouble();
+    }
+
+    public double getStatorCurrent() {
+        return m_shooter.getStatorCurrent().getValueAsDouble();
+    }
+
+    public double getSupplyCurrent() {
+        return m_shooter.getSupplyCurrent().getValueAsDouble();
     }
 
     public void setPosition(double pose) {
@@ -83,15 +105,47 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public boolean isAtPosition() {
-        return Math.abs(getPosition() - m_setPosition) < 0.1;
+        return Math.abs(getPosition() - m_setPosition) < ShooterConstants.kPostionTolerance;
     }
 
-    private void shooterConfigs() {}
+    private void shooterConfigs() {
+        m_shooterConfig.apply(new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(CurrentLimitConstants.kShooterStatorLimit)
+            .withSupplyCurrentLimit(CurrentLimitConstants.kShooterSupplyLimit)
+            .withStatorCurrentLimitEnable(true)
+            .withSupplyCurrentLimitEnable(true));
+        
+        m_shooterConfig.apply(new Slot0Configs()
+            .withKP(ShooterConstants.kP)
+            .withKI(ShooterConstants.kI)
+            .withKD(ShooterConstants.kD));
 
-    private void hoodConfigs() {}
+        m_shooterConfig.apply(new MotorOutputConfigs().withInverted(m_invertedValue));
+    }
+
+    private void hoodConfigs() {
+        m_hoodConfig.apply(new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(CurrentLimitConstants.kShooterHoodStatorLimit)
+            .withSupplyCurrentLimit(CurrentLimitConstants.kShooterHoodSupplyLimit)
+            .withStatorCurrentLimitEnable(true)
+            .withSupplyCurrentLimitEnable(true));
+        
+        m_hoodConfig.apply(new Slot0Configs()
+            .withKP(ShooterConstants.Hood.kP)
+            .withKI(ShooterConstants.Hood.kI)
+            .withKD(ShooterConstants.Hood.kD));
+
+        m_hoodConfig.apply(new MotorOutputConfigs().withInverted(m_invertedValue));
+    }
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
+        SmartDashboard.putNumber(m_side + " Shooter Velocity", getVelocity());
+        SmartDashboard.putNumber(m_side + " Hood Position", getPosition());
+        SmartDashboard.putBoolean(m_side + " Hood At Position", isAtPosition());
+        SmartDashboard.putNumber(m_side + " Shooter Set Velocity", m_setVelocity);
+        SmartDashboard.putNumber(m_side + " Hood Set Position", m_setPosition);
+        SmartDashboard.putNumber(m_side + " Shooter Stator Current", getStatorCurrent());
+        SmartDashboard.putNumber(m_side + " Shooter Supply Current", getSupplyCurrent());
     }
 }

@@ -14,12 +14,15 @@ import frc.robot.constants.DriverConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(DriverConstants.kDriver);
 
   public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
   private final IntakeSubsystem m_intake = new IntakeSubsystem();
+  private final ShooterSubsystem m_leftShooter = new ShooterSubsystem(true);
+  private final ShooterSubsystem m_rightShooter = new ShooterSubsystem(false);
 
   private final SendableChooser<Command> m_autoChooser;
 
@@ -39,7 +42,11 @@ public class RobotContainer {
                     () -> m_driverController.getRightX()));
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+    m_driverController.start().onTrue(DriveCommands.resetFieldOrientation(m_drivetrain));
+
+    m_driverController.leftBumper().whileTrue(m_intake.runIntakeCmd());
+  }
 
   public Command getAutonomousCommand() {
     return m_autoChooser.getSelected();
