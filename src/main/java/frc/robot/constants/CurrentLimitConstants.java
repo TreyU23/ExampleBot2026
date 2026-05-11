@@ -18,4 +18,7 @@ public class CurrentLimitConstants {
 
     public static final double kShooterHoodStatorLimit = 60.0;
     public static final double kShooterHoodSupplyLimit = 20.0;
+
+    public static final double kKickerStatorLimit = 60.0;
+    public static final double kKickerSupplyLimit = 30.0;
 }

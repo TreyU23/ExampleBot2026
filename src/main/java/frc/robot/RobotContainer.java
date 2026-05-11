@@ -14,6 +14,7 @@ import frc.robot.constants.DriverConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class RobotContainer {
@@ -23,6 +24,8 @@ public class RobotContainer {
   private final IntakeSubsystem m_intake = new IntakeSubsystem();
   private final ShooterSubsystem m_leftShooter = new ShooterSubsystem(true);
   private final ShooterSubsystem m_rightShooter = new ShooterSubsystem(false);
+  private final KickerSubsystem m_leftKicker = new KickerSubsystem(true);
+  private final KickerSubsystem m_rightKicker = new KickerSubsystem(false);
 
   private final SendableChooser<Command> m_autoChooser;
 

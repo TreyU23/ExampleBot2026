@@ -37,13 +37,13 @@ public class ShooterSubsystem extends SubsystemBase {
         m_isLeft = isLeft;
         m_side = isLeft ? "Left" : "Right";
 
-        m_shooter = new TalonFX(isLeft ? ShooterConstants.kLeftShooterID : ShooterConstants.kRightShooterID);
-        m_hood = new TalonFX(isLeft ? ShooterConstants.kLeftHoodID : ShooterConstants.kRightHoodID);
+        m_shooter = new TalonFX(m_isLeft ? ShooterConstants.kLeftShooterID : ShooterConstants.kRightShooterID);
+        m_hood = new TalonFX(m_isLeft ? ShooterConstants.kLeftHoodID : ShooterConstants.kRightHoodID);
 
         m_shooterConfig = m_shooter.getConfigurator();
         m_hoodConfig = m_hood.getConfigurator();
 
-        m_invertedValue = isLeft ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        m_invertedValue = m_isLeft ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
 
         shooterConfigs();
         hoodConfigs();
