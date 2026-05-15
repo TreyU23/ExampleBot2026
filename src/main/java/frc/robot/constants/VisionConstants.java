@@ -3,7 +3,6 @@ package frc.robot.constants;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 public class VisionConstants {
-
     public static final String kLimelight = "limelight-front";
 
     public static final double kMinTA = 0.10;

@@ -1,12 +1,8 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -16,19 +12,19 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CANBusConstants;
 import frc.robot.constants.CurrentLimitConstants;
+import frc.robot.constants.DriverConstants;
 import frc.robot.constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private final CANBus m_canBus = new CANBus("*");
-
-    private final TalonFX m_roller = new TalonFX(IntakeConstants.kRollerCanID, m_canBus);
-    private final TalonFX m_arm = new TalonFX(IntakeConstants.kArmCanID, m_canBus);
-
-    private final CANcoder m_armCANCoder = new CANcoder(IntakeConstants.kArmCANCoder);
+    private final TalonFX m_roller = new TalonFX(CANBusConstants.kIntakeRollerID, CANBusConstants.kCANBus);
+    private final TalonFX m_arm = new TalonFX(CANBusConstants.kIntakeArmID, CANBusConstants.kCANBus);
+    private final CANcoder m_CANCoder = new CANcoder(CANBusConstants.CANCoder.kIntakeID);
 
     private final TalonFXConfigurator m_rollerConfig = m_roller.getConfigurator();
     private final TalonFXConfigurator m_armConfig = m_arm.getConfigurator();
+    private final CANcoderConfigurator m_CANCoderConfig = m_CANCoder.getConfigurator();
 
     private final PositionVoltage m_pvReq = new PositionVoltage(0.0);
 
@@ -56,14 +52,28 @@ public class IntakeSubsystem extends SubsystemBase {
     public void setPosition(double pose) {
         m_setPosition = pose; 
 
-        if (m_setPosition > IntakeConstants.kArmMaxPosition) {
-            m_setPosition = IntakeConstants.kArmMaxPosition;
-        } else if (m_setPosition < IntakeConstants.kArmMinPosition) {
-            m_setPosition = IntakeConstants.kArmMinPosition;
-        }
+        if (m_setPosition > IntakeConstants.Arm.kMaxPosition)
+                m_setPosition = IntakeConstants.Arm.kMaxPosition;
 
-        double rot = Units.degreesToRotations(m_setPosition);
-        m_arm.setControl(m_pvReq.withPosition(rot));
+        else if (m_setPosition < IntakeConstants.Arm.kMinPosition)
+                m_setPosition = IntakeConstants.Arm.kMinPosition;
+
+        m_setPosition /= IntakeConstants.Arm.kGearRatio;
+
+        m_arm.setControl(m_pvReq.withPosition(m_setPosition));
+    }
+
+    public void dynamicVoltage(DoubleSupplier vx) {
+        m_setVoltage = ((IntakeConstants.Roller.kMaxVoltage - IntakeConstants.Roller.kMinVoltage)
+                            /DriverConstants.kMaxSpeed) * (vx.getAsDouble()) + IntakeConstants.Roller.kMinVoltage;
+
+        if (m_setVoltage > IntakeConstants.Roller.kMaxVoltage) 
+                m_setVoltage = IntakeConstants.Roller.kMaxVoltage;
+
+        if (m_setVoltage < IntakeConstants.Roller.kMinVoltage) 
+                m_setVoltage = IntakeConstants.Roller.kMinVoltage;
+
+        setVoltage(m_setVoltage);
     }
 
     public void stopRoller() {
@@ -74,7 +84,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_arm.stopMotor();
     }
 
-    public Command setVoltageCmd(double volts) {
+    public Command setVoltageCmd(double volts, double vx) {
         return runOnce(()-> setVoltage(volts));
     }
 
@@ -89,10 +99,10 @@ public class IntakeSubsystem extends SubsystemBase {
         });
     }
 
-    public Command runIntakeCmd() {
+    public Command runIntakeCmd(DoubleSupplier vx) {
         return runEnd(()-> {
-            setVoltage(IntakeConstants.kRollerMaxVoltage);
-            setPosition(IntakeConstants.kArmIntakePosition);
+            dynamicVoltage(vx);
+            setPosition(IntakeConstants.Arm.kIntakePosition);
         }, ()-> {
             stopRoller();
             stopArm();
@@ -113,32 +123,31 @@ public class IntakeSubsystem extends SubsystemBase {
         m_armConfig.apply(new CurrentLimitsConfigs()
             .withStatorCurrentLimit(CurrentLimitConstants.kIntakeArmStatorLimit)
             .withSupplyCurrentLimit(CurrentLimitConstants.kIntakeArmSupplyLimit)
-                .withStatorCurrentLimitEnable(true)
-                .withSupplyCurrentLimitEnable(true));
+            .withStatorCurrentLimitEnable(true)
+            .withSupplyCurrentLimitEnable(true));
 
         m_armConfig.apply(new SoftwareLimitSwitchConfigs()
-            .withForwardSoftLimitThreshold(Units.degreesToRotations(IntakeConstants.kArmMinPosition))
-            .withReverseSoftLimitThreshold(Units.degreesToRotations(IntakeConstants.kArmMaxPosition))
-                .withForwardSoftLimitEnable(true)
-                .withReverseSoftLimitEnable(true));
+            .withForwardSoftLimitThreshold(IntakeConstants.Arm.kMinPosition)
+            .withReverseSoftLimitThreshold(IntakeConstants.Arm.kMaxPosition)
+            .withForwardSoftLimitEnable(true)
+            .withReverseSoftLimitEnable(true));
 
         m_armConfig.apply(new Slot0Configs()
             .withGravityType(GravityTypeValue.Arm_Cosine)
-            .withKP(IntakeConstants.kP)
-            .withKI(IntakeConstants.kI)
-            .withKD(IntakeConstants.kD)
-            .withKS(IntakeConstants.kS)
-            .withKG(IntakeConstants.kG));
+            .withKP(IntakeConstants.Arm.kP)
+            .withKI(IntakeConstants.Arm.kI)
+            .withKD(IntakeConstants.Arm.kD)
+            .withKS(IntakeConstants.Arm.kS)
+            .withKG(IntakeConstants.Arm.kG));
 
         m_armConfig.apply(new FeedbackConfigs()
-            .withSensorToMechanismRatio(IntakeConstants.kArmGearRatio)
-            .withRemoteCANcoder(m_armCANCoder));
+            .withSensorToMechanismRatio(IntakeConstants.Arm.kGearRatio)
+            .withRemoteCANcoder(m_CANCoder));
 
         m_arm.setNeutralMode(NeutralModeValue.Brake);
 
-        m_armCANCoder.getConfigurator()
-            .apply(new MagnetSensorConfigs()
-                .withMagnetOffset(0.225));
+        m_CANCoderConfig.apply(new MagnetSensorConfigs()
+            .withMagnetOffset(IntakeConstants.kMagnetOffset));
     }
 
     @Override

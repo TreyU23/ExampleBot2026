@@ -1,40 +1,24 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CANBusConstants;
 import frc.robot.constants.CurrentLimitConstants;
 import frc.robot.constants.IndexerConstants;
 
 public class IndexerSubsystem extends SubsystemBase {
-    private final TalonFX m_motor;
-    private final TalonFXConfigurator m_cfg;
+    private final TalonFX m_motor = new TalonFX(CANBusConstants.kIndexerID, CANBusConstants.kCANBus);
+    private final TalonFXConfigurator m_cfg = m_motor.getConfigurator();
 
     private final VelocityVoltage m_vvReq = new VelocityVoltage(0.0);
 
     private double m_setpoint = 0.0;
 
-    private InvertedValue m_invertedValue;
-
-    private boolean m_isLeft;
-    private String m_side;
-
-    public IndexerSubsystem(boolean isLeft) {
-        m_isLeft = isLeft;
-        m_side = isLeft ? "Left" : "Right";
-
-        m_motor = new TalonFX(isLeft ? IndexerConstants.kLeftIndexerID : IndexerConstants.kRightIndexerID);
-        m_cfg = m_motor.getConfigurator();
-
-        m_invertedValue = m_isLeft ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-
+    public IndexerSubsystem() {
         motorConfigs();
     }
 
@@ -83,14 +67,15 @@ public class IndexerSubsystem extends SubsystemBase {
             .withKI(IndexerConstants.kI)
             .withKD(IndexerConstants.kD));
 
-        m_cfg.apply(new MotorOutputConfigs().withInverted(m_invertedValue));
+        m_cfg.apply(new MotorOutputConfigs()
+            .withInverted(IndexerConstants.kInvertedValue));
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber(m_side + " Indexer Velocity", getVelocity());
-        SmartDashboard.putNumber(m_side + " Indexer Setpoint", m_setpoint);
-        SmartDashboard.putNumber(m_side + " Indexer Stator Current", getStatorCurrent());
-        SmartDashboard.putNumber(m_side + " Indexer Supply Current", getSupplyCurrent());
+        SmartDashboard.putNumber("Indexer Velocity", getVelocity());
+        SmartDashboard.putNumber("Indexer Setpoint", m_setpoint);
+        SmartDashboard.putNumber("Indexer Stator Current", getStatorCurrent());
+        SmartDashboard.putNumber("Indexer Supply Current", getSupplyCurrent());
     }
 }

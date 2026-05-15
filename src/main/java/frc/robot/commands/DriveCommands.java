@@ -11,8 +11,8 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 public class DriveCommands {
     public static final SwerveRequest.FieldCentric DRIVE_REQUEST = new SwerveRequest.FieldCentric()
-        .withDeadband(DriverConstants.MAX_SPEED * DriverConstants.DRIVE_DEADBAND)
-        .withRotationalDeadband(DriverConstants.MAX_ANGULAR_RATE * DriverConstants.ROTATION_DEADBAND)
+        .withDeadband(DriverConstants.kMaxSpeed * DriverConstants.kDriveDeadDand)
+        .withRotationalDeadband(DriverConstants.kMaxAngularRate * DriverConstants.kRotationDeadBand)
         .withDriveRequestType(DriveRequestType.Velocity);
 
     // These slew rates are updated via updateSlew in SSM.java based on the commanded state
@@ -40,9 +40,9 @@ public class DriveCommands {
                     SmartDashboard.putNumber("RotCurveAdj", rotCurveAdjustment);
                     
                     return DRIVE_REQUEST
-                        .withVelocityX(m_slewX.calculate(-forwardBack.getAsDouble() * DriverConstants.MAX_SPEED*transCurveAdjustment))
-                        .withVelocityY(m_slewY.calculate(-leftRight.getAsDouble() * DriverConstants.MAX_SPEED*transCurveAdjustment))
-                        .withRotationalRate(m_slewRot.calculate(-rotation.getAsDouble() * DriverConstants.MAX_ANGULAR_RATE*rotCurveAdjustment)); 
+                        .withVelocityX(m_slewX.calculate(-forwardBack.getAsDouble() * DriverConstants.kMaxSpeed*transCurveAdjustment))
+                        .withVelocityY(m_slewY.calculate(-leftRight.getAsDouble() * DriverConstants.kMaxSpeed*transCurveAdjustment))
+                        .withRotationalRate(m_slewRot.calculate(-rotation.getAsDouble() * DriverConstants.kMaxAngularRate*rotCurveAdjustment)); 
                 });
     }
 

@@ -13,25 +13,28 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.constants.DriverConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 
 public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(DriverConstants.kDriver);
 
   public final CommandSwerveDrivetrain m_drivetrain = TunerConstants.createDrivetrain();
   private final IntakeSubsystem m_intake = new IntakeSubsystem();
-  private final ShooterSubsystem m_leftShooter = new ShooterSubsystem(true);
-  private final ShooterSubsystem m_rightShooter = new ShooterSubsystem(false);
-  private final KickerSubsystem m_leftKicker = new KickerSubsystem(true);
-  private final KickerSubsystem m_rightKicker = new KickerSubsystem(false);
+  private final ShooterSubsystem m_shooter = new ShooterSubsystem(()-> true);
+  private final KickerSubsystem m_kicker = new KickerSubsystem();
+  private final TurretSubsystem m_turret = new TurretSubsystem(()-> -m_drivetrain.getState().Speeds.omegaRadiansPerSecond);
+  private final IndexerSubsystem m_indexer = new IndexerSubsystem();
 
   private final SendableChooser<Command> m_autoChooser;
 
   public RobotContainer() {
     configureDefaultCommands();
     configureBindings();
+    configureNamedCommands();
 
     m_autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", m_autoChooser);
@@ -45,11 +48,9 @@ public class RobotContainer {
                     () -> m_driverController.getRightX()));
   }
 
-  private void configureBindings() {
-    m_driverController.start().onTrue(DriveCommands.resetFieldOrientation(m_drivetrain));
+  private void configureBindings() {}
 
-    m_driverController.leftBumper().whileTrue(m_intake.runIntakeCmd());
-  }
+  private void configureNamedCommands() {}
 
   public Command getAutonomousCommand() {
     return m_autoChooser.getSelected();

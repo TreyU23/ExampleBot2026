@@ -1,12 +1,9 @@
 package frc.robot.constants;
 
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+
 public class TurretConstants {
-    public static final int kLeftTurretID = 14;
-    public static final int kRightTurretID = 15;
-
-    public static final int kLeftCANCoderID = 16;
-    public static final int kRightCANCoderID = 17;
-
         public static final double kP = 0.1;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
@@ -15,8 +12,10 @@ public class TurretConstants {
     public static final double kDiscontinuityPoint = 0.0001;
     public static final double kMagnetOffset = 0.0;
 
-    public static final double kRotorOffsetLeft = 0.0;
-    public static final double kRotorOffsetRight = 0.0;
+    public static final double kRotorOffset = 0.0;
+
+    public static final InvertedValue kInvertedValue = InvertedValue.Clockwise_Positive;
+    public static final SensorDirectionValue kSensorDirectionValue = SensorDirectionValue.Clockwise_Positive;
 
     public static final double kGearRatio = 1.0;
 

@@ -14,6 +14,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.*;
+import frc.robot.constants.CANBusConstants;
 import frc.robot.constants.CurrentLimitConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
@@ -132,9 +133,9 @@ public class TunerConstants {
             .withDriveFrictionVoltage(kDriveFrictionVoltage);
 
     // Front Left
-    private static final int kFrontLeftDriveMotorId = 2;
-    private static final int kFrontLeftSteerMotorId = 1;
-    private static final int kFrontLeftEncoderId = 22;
+    private static final int kFrontLeftDriveMotorId = CANBusConstants.kFrontLeftDriveID;
+    private static final int kFrontLeftSteerMotorId = CANBusConstants.kFrontLeftSteerID;
+    private static final int kFrontLeftEncoderId = CANBusConstants.CANCoder.kFrontLeftSteerID;
     private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.2314453125);
     private static final boolean kFrontLeftSteerMotorInverted = false;
     private static final boolean kFrontLeftEncoderInverted = false;
@@ -143,9 +144,9 @@ public class TunerConstants {
     private static final Distance kFrontLeftYPos = Inches.of(12);
 
     // Front Right
-    private static final int kFrontRightDriveMotorId = 4;
-    private static final int kFrontRightSteerMotorId = 3;
-    private static final int kFrontRightEncoderId = 23;
+    private static final int kFrontRightDriveMotorId = CANBusConstants.kFrontRightDriveID;
+    private static final int kFrontRightSteerMotorId = CANBusConstants.kFrontRightSteerID;
+    private static final int kFrontRightEncoderId = CANBusConstants.CANCoder.kFrontRightSteerID;
     private static final Angle kFrontRightEncoderOffset = Rotations.of(0.24072265625);
     private static final boolean kFrontRightSteerMotorInverted = false;
     private static final boolean kFrontRightEncoderInverted = false;
@@ -154,9 +155,9 @@ public class TunerConstants {
     private static final Distance kFrontRightYPos = Inches.of(-12);
 
     // Back Left
-    private static final int kBackLeftDriveMotorId = 8;
-    private static final int kBackLeftSteerMotorId = 7;
-    private static final int kBackLeftEncoderId = 24;
+    private static final int kBackLeftDriveMotorId = CANBusConstants.kBackLeftDriveID;
+    private static final int kBackLeftSteerMotorId = CANBusConstants.kBackLeftSteerID;
+    private static final int kBackLeftEncoderId = CANBusConstants.CANCoder.kBackLeftSteerID;
     private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.245849609375);
     private static final boolean kBackLeftSteerMotorInverted = false;
     private static final boolean kBackLeftEncoderInverted = false;
@@ -165,9 +166,9 @@ public class TunerConstants {
     private static final Distance kBackLeftYPos = Inches.of(12);
 
     // Back Right
-    private static final int kBackRightDriveMotorId = 6;
-    private static final int kBackRightSteerMotorId = 5;
-    private static final int kBackRightEncoderId = 25;
+    private static final int kBackRightDriveMotorId = CANBusConstants.kBackRightDriveID;
+    private static final int kBackRightSteerMotorId = CANBusConstants.kBackRightSteerID;
+    private static final int kBackRightEncoderId = CANBusConstants.CANCoder.kBackRightSteerID;
     private static final Angle kBackRightEncoderOffset = Rotations.of(0.093994140625);
     private static final boolean kBackRightSteerMotorInverted = false;
     private static final boolean kBackRightEncoderInverted = false;
