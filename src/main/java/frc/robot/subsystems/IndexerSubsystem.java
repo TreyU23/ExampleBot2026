@@ -43,8 +43,8 @@ public class IndexerSubsystem extends SubsystemBase {
         m_motor.stopMotor();
     }
 
-    public Command runIndexerCmd(double velocity) {
-        return runEnd(()-> setVelocity(velocity), ()-> stop());
+    public Command runIndexerCmd() {
+        return runEnd(()-> setVelocity(IndexerConstants.kDefaultVelocity), ()-> stop());
     }
 
     public Command stopCmd() {

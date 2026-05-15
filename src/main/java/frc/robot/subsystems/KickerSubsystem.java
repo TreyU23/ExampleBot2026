@@ -43,8 +43,8 @@ public class KickerSubsystem extends SubsystemBase {
         m_motor.stopMotor();
     }
 
-    public Command runKickerCmd(double velocity) {
-        return runEnd(()-> setVelocity(velocity), ()-> stop());
+    public Command runKickerCmd() {
+        return runEnd(()-> setVelocity(KickerConstants.kDefaultVelocity), ()-> stop());
     }
 
     public Command stopCmd() {

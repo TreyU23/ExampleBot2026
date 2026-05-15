@@ -3,6 +3,8 @@ package frc.robot.constants;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.math.geometry.Translation2d;
+
 public class TurretConstants {
         public static final double kP = 0.1;
         public static final double kI = 0.0;
@@ -21,4 +23,8 @@ public class TurretConstants {
 
     public static final double kMaxAngle = 2.0;
     public static final double kMinAngle = -2.0;
+
+    public static final double kPositionTolerance = 0.05;
+
+    public static final Translation2d kTurretOffset = new Translation2d(0.0, 0.0);
 }

@@ -45,6 +45,10 @@ public class TurretSubsystem extends SubsystemBase {
         return m_motor.getSupplyCurrent().getValueAsDouble();
     }
 
+    public boolean atSetpoint() {
+        return Math.abs(m_setpoint - getPosition()) < TurretConstants.kPositionTolerance;
+    }
+
     public void setPosition(double position) {
         m_setpoint = position;
     }

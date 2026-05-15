@@ -8,4 +8,6 @@ public class KickerConstants {
     public static final double kD = 0.0;
 
     public static final InvertedValue kInvertedValue = InvertedValue.Clockwise_Positive;
+
+    public static final double kDefaultVelocity = 0.0;
 }
